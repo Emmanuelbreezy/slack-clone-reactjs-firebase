@@ -1,13 +1,30 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
+import './assets/css/app.main.css';
+import App from './container/App/App';
+
+import { createStore } from 'redux';
+import { Provider,connect } from 'react-redux'
+import {BrowserRouter, Switch,Route} from 'react-router-dom';
+
 import reportWebVitals from './reportWebVitals';
+import { Login } from './components/AuthUI/Login/login';
+import { Register } from './components/AuthUI/Register/register';
+
+const Root = () => (
+  <BrowserRouter>
+    <Switch>
+      <Route exact path="/" component={App} />
+      <Route exact path="/login" component={Login} />
+      <Route exact path="/register" component={Register} />
+    </Switch>
+  </BrowserRouter>
+);
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+    <React.StrictMode>
+      <Root />
+    </React.StrictMode>,
   document.getElementById('root')
 );
 
