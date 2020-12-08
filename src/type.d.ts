@@ -3,4 +3,6 @@ interface IUserRegisterData  {
     email: string;
     password: string;
     errors: any[];
+    loading: boolean;
+    usersRef:any;
 }

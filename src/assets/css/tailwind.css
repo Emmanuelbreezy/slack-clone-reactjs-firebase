@@ -51,29 +51,40 @@
 
 }
 
+@layer components {
+
+  .button{
+    @apply p-5 w-auto h-auto m-3;
+  }
+
+  .button--success{
+    @apply bg-green-300 text-green-700 focus:ring focus:ring-green-400;
+  }
+
+}
+
+
 
 .bg-th-light{
-    --bg-background-primary: #e53e3e;
-    --bg-background-secondary: white;
-    --bg-background-accent: white;
-    --text-copy-primary: gray;
+  --bg-background-primary: #e53e3e;
+  --bg-background-secondary: white;
+  --bg-background-accent: white;
+  --text-copy-primary: gray;
 }
 
 .bg-th-dark{
-    --bg-background-primary: #242526 ;  
-    --bg-background-secondary:  #2d2d2d;
-    --bg-background-accent: #18191a;
-    --text-copy-primary: white;
+  --bg-background-primary: #242526 ;  
+  --bg-background-secondary:  #2d2d2d;
+  --bg-background-accent: #18191a;
+  --text-copy-primary: white;
 }
-
 
 /* Tooltip container */
 .tooltip {
     position: relative;
   }
-  
   /* Tooltip text */
-  .tooltip .tooltip-ele {
+.tooltip .tooltip-ele {
     visibility: hidden;
     width: 120px;
     background-color: black;
@@ -85,9 +96,8 @@
     position: absolute;
     z-index: 1;
   }
-  
   /* Show the tooltip text when you mouse over the tooltip container */
-  .tooltip:hover .tooltip-ele {
+.tooltip:hover .tooltip-ele {
     visibility: visible;
   }
   .tooltip .tooltip-ele {

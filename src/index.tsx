@@ -1,31 +1,69 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import './assets/css/app.main.css';
 import App from './container/App/App';
 
-import { createStore } from 'redux';
-import { Provider,connect } from 'react-redux'
-import {BrowserRouter, Switch,Route} from 'react-router-dom';
+import { createStore,applyMiddleware } from 'redux';
+import thunk from "redux-thunk";
+import { Provider,connect} from 'react-redux'
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 import reportWebVitals from './reportWebVitals';
 import { Login } from './components/AuthUI/Login/login';
 import { Register } from './components/AuthUI/Register/register';
+import firebaseAuth from './firebase/firebase';
+import rootReducer from './store/reducers';
 
-const Root = () => (
-  <BrowserRouter>
+// actions exported from actions/index
+import * as actionCreator from './store/actions';
+
+import {BrowserRouter, Switch,Route, withRouter} from 'react-router-dom';
+
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk))); //composeWithDevTools()
+
+const Root = (props:any) => {
+  useEffect(()=>{
+    firebaseAuth
+            .auth()
+            .onAuthStateChanged(user => {
+              if(user){
+                props._setUser(user);
+                 props.history.push('/');
+              }
+            })
+  },[props]);
+
+  return(
     <Switch>
       <Route exact path="/" component={App} />
       <Route exact path="/login" component={Login} />
       <Route exact path="/register" component={Register} />
     </Switch>
-  </BrowserRouter>
+  );
+}
+
+// mapdispatchtoprops
+const mapDispatchToProps = (dispatch:any) => {
+  return{
+    _setUser: () => dispatch(actionCreator.setUser),
+  }
+}
+
+//connected our store to root components and the withRouter
+const RootwithAuth = withRouter(
+  connect(null,mapDispatchToProps)(Root)
 );
 
 ReactDOM.render(
-    <React.StrictMode>
-      <Root />
-    </React.StrictMode>,
-  document.getElementById('root')
+  <React.StrictMode>
+    <Provider store={store}>
+        <BrowserRouter>
+          <RootwithAuth />
+        </BrowserRouter>
+    </Provider>
+    </React.StrictMode>
+  
+    ,document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function
