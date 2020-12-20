@@ -1,3 +1,4 @@
 export {  
-    setUser
+    setUser,
+    clearUser
 } from "./user_action";

@@ -4,8 +4,13 @@ export const setUser = (user:any ) => {
     return {
         type: actionType.SET_USER,
         payload:{
-            currentUer: user
+            currentUser: user
         }
     }
 }
 
+export const clearUser = () => {
+    return {
+        type: actionType.CLEAR_USER
+    }
+}

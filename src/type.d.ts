@@ -6,3 +6,5 @@ interface IUserRegisterData  {
     loading: boolean;
     usersRef:any;
 }
+
+type SideBarListChannelProps = {}

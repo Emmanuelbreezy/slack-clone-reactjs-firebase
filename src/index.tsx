@@ -15,7 +15,7 @@ import firebaseAuth from './firebase/firebase';
 import rootReducer from './store/reducers';
 
 // actions exported from actions/index
-import * as actionCreator from './store/actions';
+import * as actionTypes from './store/actions';
 
 import {BrowserRouter, Switch,Route, withRouter} from 'react-router-dom';
 
@@ -29,9 +29,12 @@ const Root = (props:any) => {
               if(user){
                 props._setUser(user);
                  props.history.push('/');
+              }else{
+                props.history.push('/login');
+                props._clearUser();
               }
             })
-  },[props]);
+  },[]);
 
   return(
     <Switch>
@@ -42,10 +45,12 @@ const Root = (props:any) => {
   );
 }
 
+
 // mapdispatchtoprops
 const mapDispatchToProps = (dispatch:any) => {
   return{
-    _setUser: () => dispatch(actionCreator.setUser),
+    _setUser: (user:any) => dispatch(actionTypes.setUser(user)),
+    _clearUser: () => dispatch(actionTypes.clearUser),
   }
 }
 

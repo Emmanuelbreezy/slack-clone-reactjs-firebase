@@ -7,7 +7,8 @@ export const MainHeader = (prop:MainHeaderProps) => {
         <div className="border-b border-gray-200 p-3 h-auto">
             <div className="flex items-center justify-between ml-3 mr-3">
                 <div>
-                    <button>#grow</button>
+                    <h2>#social-media</h2>
+                    <span>21. 25</span>
                 </div>
                 <div>
                     <button>Search</button>
