@@ -6,78 +6,69 @@
 
 @tailwind utilities;
 
-@layer base {
-
-    @font-face {
-      font-family: Sansita Swashed;
-      font-weight:  500;
-      src: url(../fonts/sansita/SansitaSwashed-SemiBold.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Sansita Swashed;
-      font-weight: 700;
-      src: url(../fonts/sansita/SansitaSwashed-Bold.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Sansita Swashed;
-      font-weight: 700;
-      src: url(../fonts/sansita/SansitaSwashed-Bold.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Roboto;
-      font-weight: 100;
-      src: url(../fonts/roboto/Roboto-Thin.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Roboto;
-      font-weight: 400;
-      src: url(../fonts/roboto/Roboto-Regular.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Roboto;
-      font-weight: 500;
-      src: url(../fonts/roboto/Roboto-Medium.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Roboto;
-      font-weight: 700;
-      src: url(../fonts/roboto/Roboto-Bold.ttf) format('ttf');
-    }
-    @font-face {
-      font-family: Roboto;
-      font-weight: 300;
-      src: url(../fonts/roboto/Roboto-Light.ttf) format('ttf');
-    }
-
-}
 
 @layer components {
 
-  .button{
+  .sl-online-active{
+    @apply w-2 h-2 bg-green-500 rounded-full;
+  }
+
+  .sl-offline-active{
+    @apply w-2 h-2 bg-gray-500 rounded-full;
+  }
+
+  .sl-button{
     @apply p-5 w-auto h-auto m-3;
   }
 
-  .button--success{
+  .sl-button--success{
     @apply bg-green-300 text-green-700 focus:ring focus:ring-green-400;
   }
+  /* .button--cancel {
 
+  } */
 }
 
 
+@layer utilities {
 
-.bg-th-light{
-  --bg-background-primary: #e53e3e;
-  --bg-background-secondary: white;
-  --bg-background-accent: white;
-  --text-copy-primary: gray;
-}
+  .sl-theme-light{
+    --sl-background-scaffold: white;
+    --sl-background-primary: #400f3d;
+    --sl-background-secondary: #e4e4e7;
+    --sl-background-accent:  #3d54ab;
 
-.bg-th-dark{
-  --bg-background-primary: #242526 ;  
-  --bg-background-secondary:  #2d2d2d;
-  --bg-background-accent: #18191a;
-  --text-copy-primary: white;
-}
+    --sl-border-secondary: #4c3c4c;
+    --sl-border-primary: #e4e4e7;
+
+    --sl-text-side-primary: white;
+    --sl-text-side-secondary: #71717a;
+
+    --sl-text-body-primary: #27272a;
+    --sl-text-body-secondary: #71717a;
+
+  }
+  
+  .sl-theme-dark{
+    --sl-background-scaffold: #27272a;
+    --sl-background-primary: #18181b;
+    --sl-background-secondary:  #2d2d2d;
+    --sl-background-accent: #400f3d;
+
+    --sl-border-secondary: #4c3c4c;
+    --sl-border-primary: #71717a;
+
+    --sl-text-side-primary: white;
+    --sl-text-side-secondary: #d4d4d8;
+
+    --sl-text-body-primary: white;
+    --sl-text-body-secondary: #71717a;
+
+
+  }
+
+
+
 
 /* Tooltip container */
 .tooltip {
@@ -116,3 +107,5 @@
     border-style: solid;
     border-color: transparent transparent black transparent;
   }
+
+}

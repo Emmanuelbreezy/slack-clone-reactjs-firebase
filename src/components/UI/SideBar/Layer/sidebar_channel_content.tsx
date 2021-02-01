@@ -1,49 +1,192 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import firebaseAuth from "../../../../firebase/firebase";
+import DirectMessagesWidget  from "../../../Widget/direct_messages_widget";
+import { SkeletonLoader } from "../../../Widget/loader_widget";
 import { ModalWidget } from "../../../Widget/modal_widget";
+import { PublicChannelsWidget } from "../../../Widget/public_channels_widget";
 
-type SideBarChannelProps = {}
+type SideBarChannelProps = {
+    currentUser:any;
+    isLoading: boolean;
+    setCurrentChannel: Function;
+    setPrivateChannel: Function;
+}
+type ChannelType = {
+    user:any;
+    channelName: string;
+    channelDetail:string;
+    channelRef: any;
+}
 
-export const SideBarChannelContent = (prop:SideBarChannelProps) => {
-    const [channels, setChannels]  = useState([]);
+
+
+export const SideBarChannelContent = (props:SideBarChannelProps) => {
+    const [_firstChannelLoad, _setFirstChannelLoad] = useState<boolean>(true);
+    const [_channelsLoader, _setChannelLoader] = useState<boolean>(true);
+    const [activeChannel, setActiveChannel] = useState('');
+    const [activePrivateChannel, setActivePrivateChannel] = useState('');
+    const [_channels, _setChannels]  = useState<any[]>([]);
     const [modal, setModal]  = useState(false);
-    const [channel, setChannnel]  = useState({
+    const [_modalLoader, _setModalLoader] = useState<boolean>(true);
+    const [_channel, _setChannel]  = useState<ChannelType>({
+                                            user: props.currentUser,
                                             channelName: '',
-                                            channelDetail: ''
+                                            channelDetail: '',
+                                            channelRef: firebaseAuth.database().ref('channels')
                                         });
 
-    const toggleModalHandler = () => setModal((prevState) => !prevState);
+    
+        
+    useEffect(() => {
+        _addListener();
+        if(_channelsLoader === false) {
+            _setFirstChannelHandler();
+        }
+
+        return () => {
+            removeListeners();
+        };
+    },[_channelsLoader]);
+
+
+
+    const _addListener = () => {
+        let loadedChannels = Array();
+        _channel.channelRef.on('child_added',(snap:any) => {
+            if(snap){
+                loadedChannels.push(snap.val());
+                    setTimeout(() => {
+                        _setChannels(loadedChannels);
+                        _setChannelLoader(false);                        
+                    },5000);
+            }
+        })
+    }
+
+    const removeListeners = () => {
+        _channel.channelRef.off();   
+    }
+
+    const _setFirstChannelHandler = () => {
+        const _firstchannel = _channels[0];
+        if(_firstChannelLoad && _channels.length > 0){
+            props.setCurrentChannel(_firstchannel);
+            _setActiveChanelHandler(_firstchannel)
+        _setFirstChannelLoad(false);
+        }
+    }
+
+
+    const _isFormValid = ({channelName,channelDetail}:ChannelType) => channelName && channelDetail;
+    const openModalHandler = () => {
+        setModal(true);
+        setTimeout(() => {
+            _setModalLoader(false);
+        },5000);
+    }
+    const closeModalHandler = () => {
+        setModal(false);
+        _setModalLoader(true);
+    }
+
+    const _addChannel = () => {
+        const { channelRef, channelName,channelDetail,user } = _channel;
+        const key = channelRef.push().key;
+        const newChannel = {
+                id: key,
+                name: channelName,
+                details: channelDetail,
+                createdBy:{
+                    name: user.displayName,
+                    avatar: user.photoURL
+                }
+            }; 
+            channelRef
+                    .child(key)
+                    .update(newChannel)
+                    .then(()=>{
+                        closeModalHandler();
+                        _setModalLoader(true);
+                        _setChannel({
+                            ..._channel,
+                            channelName:'',
+                            channelDetail:''
+                        });
+                        _setChannelLoader(true);
+                         const _lastaddedchannel = _channels[_channels.length -1 ];
+                        if(_channels.length > 0){
+                            props.setCurrentChannel(_lastaddedchannel);
+                            _setActiveChanelHandler(_lastaddedchannel)
+                        }
+                        
+                    }).catch((err:any) => {
+                        console.log(err);
+                    })
+            
+    }       
+    
+    const _setActiveChanelHandler = (channel:any) => {
+        setActivePrivateChannel('');
+        setActiveChannel(channel.id);
+
+    }
+
+    const  handleChannelSubmit = (e:React.ChangeEvent<HTMLInputElement>) => {
+                e.preventDefault();
+        if(_isFormValid(_channel)){
+            _addChannel();
+        }
+    }
+    const handleInputChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+        _setChannel({
+            ..._channel,
+            [e.currentTarget.name]: e.currentTarget.value 
+        });
+    }
+
+    const _changeChannelGlobal = (channel:any) => {
+    // sidebar setting the selected channel to global state
+        _setActiveChanelHandler(channel);
+       props.setCurrentChannel(channel);
+       props.setPrivateChannel(false);
+
+        
+    }
+    
+    const _displayChannels = (channels:any[]) => {
+        return _channelsLoader ?  <SkeletonLoader /> : channels.length > 0 && channels.map((channel:any) => {
+            const active = channel.id === activeChannel;
+            const classType = active === true ?  ("py-1 px-9 w-full text-gray-300 focus:outline-none cursor-pointer block transform hover:transition-opacity hover:ease-in-out bg-blue-500 bg-opacity-60 text-md") : ("py-1 px-9 w-full text-md text-gray-400  hover:text-gray-300 cursor-pointer block transform hover:transition-opacity hover:ease-in-out focus:outline-none  hover:bg-blue-500 hover:bg-opacity-10");
+            return (
+                    <button  key={channel.id} className={classType}
+                    onClick={() => _changeChannelGlobal(channel)}>
+                        <span className=" text-left  block w-full " > # {channel.name}</span>
+                    </button>
+                );
+        });
+            
+    }
+                                                
     return (
         <>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1">
                 <div className="flex flex-col"> 
-                    <div className="p-6 h-auto" style={{ borderBottom: "1px solid #4c3c4c"}}>
-                        read
+                    <div className="py-2" style={{ borderBottom: "1px solid #4c3c4c"}}>
+                       <PublicChannelsWidget channels={_channels} openModalHandler={openModalHandler}
+                       channelList={() => _displayChannels(_channels)} />
                     </div>
-                    <div className="p-4">
-                        <div className="channel-header flex items-center justify-between mb-3">
-                            <div className="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current mr-2" viewBox="0 0 24 24">
-                                    <path fillRule="evenodd" d="M19.8521478,10 L21.2077346,10.7531038 C22.2640885,11.339967 22.2640885,12.660033 21.2077346,13.2468962 L19.8521478,14 L21.2077346,14.7531038 C22.2640885,15.339967 22.2640885,16.660033 21.2077346,17.2468962 L13.1565731,21.7197637 C12.484006,22.0934121 11.515994,22.0934121 10.8434269,21.7197637 L2.79226543,17.2468962 C1.73591152,16.660033 1.73591152,15.339967 2.79226543,14.7531038 L4.1478522,14 L2.79226543,13.2468962 C1.73591152,12.660033 1.73591152,11.339967 2.79226543,10.7531038 L4.1478522,10 L2.79226543,9.24689624 C1.73591152,8.66003296 1.73591152,7.33996704 2.79226543,6.75310376 L10.8434269,2.28023626 C11.515994,1.90658791 12.484006,1.90658791 13.1565731,2.28023626 L21.2077346,6.75310376 C22.2640885,7.33996704 22.2640885,8.66003296 21.2077346,9.24689624 L19.8521478,10 Z M17.7930218,11.1439589 L13.1565731,13.7197637 C12.484006,14.0934121 11.515994,14.0934121 10.8434269,13.7197637 L6.20697823,11.1439589 L4.66610426,12 L11.8147128,15.9714492 C11.8832347,16.0095169 12.1167653,16.0095169 12.1852872,15.9714492 L19.3338957,12 L17.7930218,11.1439589 Z M17.7930218,15.1439589 L13.1565731,17.7197637 C12.484006,18.0934121 11.515994,18.0934121 10.8434269,17.7197637 L6.20697823,15.1439589 L4.66610426,16 L11.8147128,19.9714492 C11.8832347,20.0095169 12.1167653,20.0095169 12.1852872,19.9714492 L19.3338957,16 L17.7930218,15.1439589 Z M12.1852872,4.02855081 C12.1167653,3.99048306 11.8832347,3.99048306 11.8147128,4.02855081 L4.66610426,8 L11.8147128,11.9714492 C11.8832347,12.0095169 12.1167653,12.0095169 12.1852872,11.9714492 L19.3338957,8 L12.1852872,4.02855081 Z"/>
-                                </svg>
-                                <span className="text-sm font-semibold text-gray-200">CHANNELS</span>
-                                <span className="w-5 h-5 flex items-center justify-center ml-1 rounded-full bg-gray-700 text-white text-xs">
-                                    {channels.length}
-                                </span>
-                            </div>
-                            <div className="flex flex-shrink-0">
-                                <button className="focus:outline-none" onClick={toggleModalHandler}>
-                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                                    <polygon fillRule="evenodd" points="13 11 22 11 22 13 13 13 13 22 11 22 11 13 2 13 2 11 11 11 11 2 13 2"/>
-                                </svg>
-                                </button>
-                            </div>
-                        </div>
+                    <div className="h-auto">
+                        <DirectMessagesWidget 
+                                currentUser={props.currentUser} 
+                                activePrivateChannel={activePrivateChannel}
+                                setActivePrivateChannel={setActivePrivateChannel}
+                                setActiveChannel={setActiveChannel}
+
+                          />
                     </div>
                 </div>
             </div>
-
-
-            <ModalWidget />
+            {modal === true && <ModalWidget loader={_modalLoader}  onClose={closeModalHandler} handleChange={handleInputChange} onSubmit={handleChannelSubmit} />}
     </>
     )
 }

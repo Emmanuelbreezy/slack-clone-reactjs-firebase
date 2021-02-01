@@ -82,7 +82,6 @@ export const Register = (props:any) => {
                     .auth()
                     .createUserWithEmailAndPassword( _userData.email, _userData.password)
                     .then((createdUser:any) => {
-                        console.log(createdUser);
                         createdUser.user.updateProfile({
                             displayName: _userData.username,
                             photoURL: `http://gravatar.com/avatar/${MD5(createdUser.user.email)}?d=identicon`

@@ -18,7 +18,7 @@ export const DropdownWidget = (props:DropdownWidgetProps) => {
     return (
         <>
            {props.show ? <div className="dropdown-menu origin-top-left top-5 absolute left-1/4 mt-2 w-48 rounded-md 
-            shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition ease-out duration-100 " 
+            shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-40 transition ease-out duration-100 " 
             role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                    {props.optionList.map((option:any) =>{
                        

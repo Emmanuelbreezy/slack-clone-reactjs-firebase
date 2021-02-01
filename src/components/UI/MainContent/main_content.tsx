@@ -1,24 +1,30 @@
-import React from "react";
-import { MainChatBox } from "./Layer/main_chatbox";
-import { MainHeader } from "./Layer/main_header";
-import { MainMessages } from "./Layer/main_messages";
+import React, { useState } from "react";
+import {useSelector } from 'react-redux';
+import firebaseAuth from "../../../firebase/firebase";
+import  MainMessages from "./Layer/main_messages";
+import { MainMetaPanel } from "./Layer/main_meta_panel";
 
 type MainContentProps = {}
 
-export const MainContent = (prop:MainContentProps) => {
+export const MainContent = (props:MainContentProps) => {
+    const [_messagesRef, _setMessagesRef] = useState({
+        Ref: firebaseAuth.database().ref('messages')
+    })
+    const [_privateMessagesRef, _setPrivateMessagesRef] = useState({
+        Ref: firebaseAuth.database().ref('privatemessages')
+    })
+    const  currentUserData = useSelector((state:any) => state.user.currentUser);
+    const  currentChannelData = useSelector((state:any) => state.channel.currentChannel);
+    const  isPrivateChannel:boolean    = useSelector((state:any) => state.channel.isPrivateChannel);
     return (
-        <div className="bg-white text-black w-full flex">
+        <div className="bg-background-scaffold  w-full flex">
             <div className="flex flex-col flex-1 h-screen overflow-hidden">
-                <MainHeader />
-                <MainMessages />
-                <MainChatBox />
+             <MainMessages key={currentChannelData && currentChannelData.id} 
+               messagesRef={_messagesRef.Ref} privateMessagesRef={_privateMessagesRef.Ref}  
+               currentChannel={currentChannelData} 
+               currentUser={currentUserData} isPrivateChannel={isPrivateChannel}/>
             </div>
-            <div className="meta-panel flex-shrink w-2/6 ring-1 ring-gray-300 h-screen overflow-hidden">
-                <div className="border-b border-gray-200 p-3 h-auto">
-                    <h2>Detail</h2>
-                    <span>#social-media</span>
-                </div>
-            </div>
+            <MainMetaPanel currentChannel={currentChannelData} />
         </div>
     )
 }

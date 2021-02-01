@@ -7,4 +7,4 @@ interface IUserRegisterData  {
     usersRef:any;
 }
 
-type SideBarListChannelProps = {}
+type SideBarColorChannelProps = {}

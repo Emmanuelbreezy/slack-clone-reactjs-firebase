@@ -21,26 +21,26 @@ import {BrowserRouter, Switch,Route, withRouter} from 'react-router-dom';
 
 const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk))); //composeWithDevTools()
 
-const Root = (props:any) => {
+const Root = ({_setUser, history,_clearUser}:any) => {
   useEffect(()=>{
     firebaseAuth
             .auth()
             .onAuthStateChanged(user => {
               if(user){
-                props._setUser(user);
-                 props.history.push('/');
+                _setUser(user);
+                 history.push('/');
               }else{
-                props.history.push('/login');
-                props._clearUser();
+                history.push('/login');
+                _clearUser();
               }
             })
-  },[]);
+  },[_setUser,history,_clearUser]);
 
   return(
     <Switch>
-      <Route exact path="/" component={App} />
-      <Route exact path="/login" component={Login} />
-      <Route exact path="/register" component={Register} />
+      <Route exact  path="/" component={App} />
+      <Route  path="/login" component={Login} />
+      <Route  path="/register" component={Register} />
     </Switch>
   );
 }

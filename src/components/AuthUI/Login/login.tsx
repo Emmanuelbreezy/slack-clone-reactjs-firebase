@@ -94,7 +94,8 @@ export const Login = () => {
                            {_userData.errors.length > 0 && displayErrors(_userData.errors)}
                                <fieldset className="mb-5">
                                     <input placeholder="E-mail" name="email" type="email" 
-                                    className="focus:ring focus:ring-purple-300  focus:outline-none focus:border-transparent border border-gray-400 p-3 w-full
+                                    className="focus:ring focus:ring-purple-300  focus:outline-none
+                                     focus:border-transparent border border-gray-400 p-3 w-full
                                      rounded-md " onChange={handleChange}  autoComplete="on"/>
                                </fieldset>
                                <fieldset className="mb-5 relative">
